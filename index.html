@@ -1,0 +1,5072 @@
+<!DOCTYPE html>
+<!-- saved from url=(0032)http://127.0.0.1:5500/power.html -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>SalesAI - Sales Prediction Dashboard</title>
+
+<script src="./index_files/chart.js.download"></script>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial,sans-serif;
+}
+
+body{
+    background:#f1f5f9;
+    color:#172033;
+}
+
+/* ================= AUTH ================= */
+
+.auth-screen{
+    position:fixed;
+    inset:0;
+    background:linear-gradient(135deg,#111827,#2563eb,#7c3aed);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+    z-index:9999;
+}
+
+.auth-screen.hidden{
+    display:none;
+}
+
+.auth-card{
+    width:430px;
+    max-width:100%;
+    background:white;
+    padding:30px;
+    border-radius:20px;
+    box-shadow:0 25px 70px #0007;
+}
+
+.auth-logo{
+    text-align:center;
+    font-size:32px;
+    font-weight:800;
+}
+
+.auth-logo span{
+    color:#2563eb;
+}
+
+.auth-sub{
+    text-align:center;
+    color:#64748b;
+    margin:8px 0 22px;
+}
+
+.auth-tabs{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:5px;
+    background:#f1f5f9;
+    padding:5px;
+    border-radius:10px;
+    margin-bottom:20px;
+}
+
+.auth-tabs button{
+    background:transparent;
+    color:#475569;
+}
+
+.auth-tabs button.active{
+    background:#2563eb;
+    color:white;
+}
+
+.auth-form{
+    display:none;
+}
+
+.auth-form.active{
+    display:block;
+}
+
+.field{
+    margin-bottom:14px;
+}
+
+.field label{
+    display:block;
+    font-weight:bold;
+    margin-bottom:6px;
+}
+
+.field input{
+    width:100%;
+    padding:12px;
+    border:1px solid #cbd5e1;
+    border-radius:8px;
+    outline:none;
+}
+
+.field input:focus{
+    border-color:#2563eb;
+}
+
+.auth-submit{
+    width:100%;
+    margin-top:5px;
+}
+
+.auth-message{
+    text-align:center;
+    min-height:20px;
+    margin-top:10px;
+    font-size:14px;
+    font-weight:bold;
+}
+
+/* ================= SIDEBAR ================= */
+
+.sidebar{
+    position:fixed;
+    left:0;
+    top:0;
+    width:240px;
+    height:100vh;
+    background:#111827;
+    color:white;
+    padding:25px 15px;
+    z-index:20;
+}
+
+.logo{
+    text-align:center;
+    font-size:28px;
+    font-weight:bold;
+    margin-bottom:35px;
+}
+
+.logo span{
+    color:#3b82f6;
+}
+
+.menu{
+    list-style:none;
+}
+
+.menu li{
+    padding:14px;
+    margin:7px 0;
+    border-radius:9px;
+    cursor:pointer;
+}
+
+.menu li:hover,
+.menu li.active{
+    background:#2563eb;
+}
+
+/* ================= MAIN ================= */
+
+.main{
+    margin-left:240px;
+    padding:25px;
+}
+
+.header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:15px;
+    margin-bottom:25px;
+}
+
+.header h1{
+    font-size:28px;
+}
+
+.header p{
+    color:#64748b;
+    margin-top:5px;
+}
+
+.header-right{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    flex-wrap:wrap;
+}
+
+.user-badge{
+    background:#dbeafe;
+    color:#1d4ed8;
+    padding:10px 13px;
+    border-radius:9px;
+    font-weight:bold;
+}
+
+.upload{
+    background:white;
+    padding:10px;
+    border-radius:9px;
+}
+
+/* ================= BUTTONS ================= */
+
+button{
+    border:0;
+    border-radius:8px;
+    padding:10px 15px;
+    background:#2563eb;
+    color:white;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+button:hover{
+    opacity:.9;
+}
+
+.secondary{
+    background:#64748b;
+}
+
+.success{
+    background:#16a34a;
+}
+
+.danger{
+    background:#dc2626;
+}
+
+.warning{
+    background:#f59e0b;
+}
+
+.dark{
+    background:#111827;
+}
+
+/* ================= PAGES ================= */
+
+.page{
+    display:none;
+}
+
+.page.active{
+    display:block;
+}
+
+/* ================= FILTERS ================= */
+
+.toolbar{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    align-items:center;
+    margin-bottom:18px;
+}
+
+.toolbar select,
+.toolbar input{
+    padding:11px;
+    border:1px solid #cbd5e1;
+    border-radius:8px;
+    background:white;
+}
+
+.filter-status{
+    background:#dbeafe;
+    color:#1d4ed8;
+    padding:11px 14px;
+    border-radius:8px;
+    margin-bottom:20px;
+}
+
+/* ================= CARDS ================= */
+
+.cards{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:18px;
+    margin-bottom:20px;
+}
+
+.card{
+    background:white;
+    padding:22px;
+    border-radius:15px;
+    box-shadow:0 4px 15px #0001;
+}
+
+.card h4{
+    color:#64748b;
+    margin-bottom:10px;
+}
+
+.card h2{
+    font-size:27px;
+}
+
+.card p{
+    margin-top:7px;
+    color:#16a34a;
+}
+
+.prediction{
+    background:linear-gradient(135deg,#2563eb,#7c3aed);
+    color:white;
+}
+
+.prediction h4,
+.prediction p{
+    color:white;
+}
+
+/* ================= BOX ================= */
+
+.box,
+.table-box,
+.analytics-card,
+.product-card{
+    background:white;
+    padding:22px;
+    border-radius:15px;
+    box-shadow:0 4px 15px #0001;
+    margin-bottom:20px;
+}
+
+.grid2{
+    display:grid;
+    grid-template-columns:2fr 1fr;
+    gap:20px;
+}
+
+.chart-container{
+    height:340px;
+    margin-top:15px;
+}
+
+/* ================= PRODUCTS ================= */
+
+.product-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:20px;
+}
+
+.product-card h2{
+    margin:12px 0;
+}
+
+.progress{
+    height:8px;
+    background:#e2e8f0;
+    border-radius:10px;
+    overflow:hidden;
+    margin-top:10px;
+}
+
+.progress div{
+    height:100%;
+    background:#2563eb;
+}
+
+/* ================= TABLE ================= */
+
+.table-box{
+    overflow-x:auto;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:15px;
+}
+
+th,
+td{
+    padding:12px;
+    border-bottom:1px solid #e2e8f0;
+    text-align:left;
+}
+
+th{
+    background:#f8fafc;
+}
+
+.actions{
+    display:flex;
+    gap:5px;
+}
+
+/* ================= ANALYTICS ================= */
+
+.analytics-grid{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:18px;
+}
+
+/* ================= MODAL ================= */
+
+.modal{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:#0008;
+    align-items:center;
+    justify-content:center;
+    z-index:100;
+}
+
+.modal.show{
+    display:flex;
+}
+
+.modal-content{
+    background:white;
+    width:440px;
+    max-width:92%;
+    padding:25px;
+    border-radius:15px;
+    max-height:90vh;
+    overflow-y:auto;
+}
+
+.modal-buttons{
+    display:flex;
+    justify-content:flex-end;
+    gap:10px;
+    margin-top:20px;
+}
+
+/* ================= DARK MODE ================= */
+
+body.dark-mode{
+    background:#0f172a;
+    color:#e5e7eb;
+}
+
+.dark-mode .box,
+.dark-mode .card,
+.dark-mode .table-box,
+.dark-mode .analytics-card,
+.dark-mode .product-card,
+.dark-mode .upload,
+.dark-mode .modal-content{
+    background:#1e293b;
+    color:#e5e7eb;
+}
+
+.dark-mode .auth-card{
+    background:#1e293b;
+    color:#e5e7eb;
+}
+
+.dark-mode .auth-sub{
+    color:#94a3b8;
+}
+
+.dark-mode .auth-tabs{
+    background:#334155;
+}
+
+.dark-mode .auth-tabs button{
+    color:#e5e7eb;
+}
+
+.dark-mode .toolbar select,
+.dark-mode .toolbar input,
+.dark-mode .field input{
+    background:#1e293b;
+    color:white;
+    border-color:#475569;
+}
+
+.dark-mode th{
+    background:#334155;
+}
+
+.dark-mode td,
+.dark-mode th{
+    border-color:#475569;
+}
+
+.dark-mode .filter-status{
+    background:#172554;
+    color:#93c5fd;
+}
+
+.dark-mode .user-badge{
+    background:#172554;
+    color:#93c5fd;
+}
+
+.dark-mode .progress{
+    background:#334155;
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media(max-width:1100px){
+
+    .cards,
+    .analytics-grid{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+    .grid2{
+        grid-template-columns:1fr;
+    }
+
+    .product-grid{
+        grid-template-columns:repeat(2,1fr);
+    }
+}
+
+@media(max-width:700px){
+
+    .sidebar{
+        width:60px;
+        padding:20px 5px;
+    }
+
+    .logo{
+        font-size:0;
+    }
+
+    .logo span{
+        font-size:20px;
+    }
+
+    .menu li{
+        font-size:0;
+        text-align:center;
+    }
+
+    .menu li:first-letter{
+        font-size:20px;
+    }
+
+    .main{
+        margin-left:60px;
+        padding:12px;
+    }
+
+    .header{
+        flex-direction:column;
+        align-items:stretch;
+    }
+
+    .header-right{
+        width:100%;
+    }
+
+    .upload{
+        width:100%;
+    }
+
+    .upload input{
+        width:100%;
+    }
+
+    .toolbar{
+        flex-direction:column;
+        align-items:stretch;
+    }
+
+    .toolbar select,
+    .toolbar input,
+    .toolbar button{
+        width:100%;
+        min-height:44px;
+    }
+
+    .cards,
+    .analytics-grid,
+    .product-grid{
+        grid-template-columns:1fr;
+    }
+
+    .chart-container{
+        height:280px;
+    }
+
+    table{
+        min-width:700px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<!-- =====================================================
+                         AUTH
+===================================================== -->
+
+<div class="auth-screen" id="authScreen">
+
+    <div class="auth-card">
+
+        <div class="auth-logo">
+            Sales<span>AI</span>
+        </div>
+
+        <div class="auth-sub">
+            Sales Prediction &amp; Business Analytics
+        </div>
+
+        <div class="auth-tabs">
+
+            <button id="signInTab" class="active" type="button" onclick="showAuth(&#39;signin&#39;)">
+                🔐 Sign In
+            </button>
+
+            <button id="signUpTab" type="button" onclick="showAuth(&#39;signup&#39;)">
+                ✨ Sign Up
+            </button>
+
+        </div>
+
+        <!-- SIGN IN -->
+
+        <form id="signinForm" class="auth-form active" onsubmit="signIn(event)">
+
+            <div class="field">
+                <label>Email</label>
+                <input id="loginEmail" type="email" placeholder="Enter your email" autocomplete="email" required="">
+            </div>
+
+            <div class="field">
+                <label>Password</label>
+                <input id="loginPassword" type="password" placeholder="Enter password" autocomplete="current-password" required="">
+            </div>
+
+            <button class="auth-submit" type="submit">
+                Sign In
+            </button>
+
+            <div id="loginMessage" class="auth-message"></div>
+
+        </form>
+
+        <!-- SIGN UP -->
+
+        <form id="signupForm" class="auth-form" onsubmit="signUp(event)">
+
+            <div class="field">
+                <label>Full Name</label>
+                <input id="signupName" type="text" placeholder="Enter your name" required="">
+            </div>
+
+            <div class="field">
+                <label>Email</label>
+                <input id="signupEmail" type="email" placeholder="Enter email" autocomplete="email" required="">
+            </div>
+
+            <div class="field">
+                <label>Password</label>
+                <input id="signupPassword" type="password" placeholder="Minimum 6 characters" minlength="6" required="">
+            </div>
+
+            <div class="field">
+                <label>Confirm Password</label>
+                <input id="signupConfirm" type="password" placeholder="Confirm password" minlength="6" required="">
+            </div>
+
+            <button class="auth-submit" type="submit">
+                Create Account
+            </button>
+
+            <div id="signupMessage" class="auth-message">
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+                       SIDEBAR
+===================================================== -->
+
+<div class="sidebar">
+
+    <div class="logo">
+        Sales<span>AI</span>
+    </div>
+
+    <ul class="menu">
+
+        <li class="active" onclick="showPage(&#39;dashboard&#39;,this)">
+            📊 Dashboard
+        </li>
+
+        <li onclick="showPage(&#39;analytics&#39;,this)">
+            📈 Analytics
+        </li>
+
+        <li onclick="showPage(&#39;prediction&#39;,this)">
+            🔮 Prediction
+        </li>
+
+        <li onclick="showPage(&#39;products&#39;,this)">
+            🛒 Products
+        </li>
+
+        <li onclick="showPage(&#39;data&#39;,this)">
+            📁 Sales Data
+        </li>
+
+    </ul>
+
+</div>
+
+
+<!-- =====================================================
+                         MAIN
+===================================================== -->
+
+<div class="main">
+
+    <div class="header">
+
+        <div>
+            <h1 id="pageTitle">
+                Sales Prediction Dashboard
+            </h1>
+
+            <p id="pageSubtitle">
+                Power BI Style Sales Analytics
+            </p>
+        </div>
+
+        <div class="header-right">
+
+            <div class="upload">
+                <input type="file" id="csvInput" accept=".csv">
+            </div>
+
+            <label>
+                <input type="checkbox" id="darkToggle" onchange="toggleDark()">
+                🌙 Dark
+            </label>
+
+            <div class="user-badge" id="userBadge">👤 Ridham</div>
+
+            <button class="danger" type="button" onclick="logout()">
+                Logout
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- =================================================
+                         DASHBOARD
+    ================================================= -->
+
+    <section id="dashboard" class="page active">
+
+        <div class="toolbar">
+
+            <select id="companyFilter"><option value="All">All Companies</option><option value="TechStore">TechStore</option></select>
+
+            <select id="categoryFilter"><option value="All">All Categories</option><option value="Electronics">Electronics</option><option value="Accessories">Accessories</option></select>
+
+            <select id="regionFilter"><option value="All">All Regions</option><option value="North">North</option><option value="West">West</option><option value="South">South</option><option value="East">East</option></select>
+
+            <input type="date" id="fromDate">
+
+            <input type="date" id="toDate">
+
+            <button type="button" onclick="applyFilters()">
+                🔍 Apply
+            </button>
+
+            <button class="secondary" type="button" onclick="resetFilters()">
+                Reset
+            </button>
+
+            <button type="button" onclick="openModal()">
+                ➕ Add Sale
+            </button>
+
+            <button class="success" type="button" onclick="runPrediction()">
+                🔮 Forecast
+            </button>
+
+        </div>
+
+
+        <div class="filter-status" id="filterStatus">Showing all 21 sales records</div>
+
+
+        <div class="cards">
+
+            <div class="card">
+
+                <h4>💰 Total Revenue</h4>
+
+                <h2 id="totalRevenue">₹14,65,000</h2>
+
+                <p>
+                    Actual Sales
+                </p>
+
+            </div>
+
+
+            <div class="card">
+
+                <h4>🛒 Total Orders</h4>
+
+                <h2 id="totalOrders">21</h2>
+
+                <p>
+                    Transactions
+                </p>
+
+            </div>
+
+
+            <div class="card">
+
+                <h4>📈 Growth Rate</h4>
+
+                <h2 id="growth">8.2%</h2>
+
+                <p>
+                    Period Growth
+                </p>
+
+            </div>
+
+
+            <div class="card prediction">
+
+                <h4>
+                    🔮 Next Month Forecast
+                </h4>
+
+                <h2 id="forecast">₹2,82,714</h2>
+
+                <p>
+                    Predicted Revenue
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="grid2">
+
+            <div class="box">
+
+                <h3>
+                    📈 Actual vs Forecast
+                </h3>
+
+                <div class="chart-container">
+                    <canvas id="salesChart" style="box-sizing: border-box; display: block; height: 340px; width: 757.9px;" width="947" height="425"></canvas>
+                </div>
+
+            </div>
+
+
+            <div class="box">
+
+                <h3>
+                    🥧 Category Distribution
+                </h3>
+
+                <div class="chart-container">
+                    <canvas id="categoryChart" style="box-sizing: border-box; display: block; height: 340px; width: 356.9px;" width="446" height="425"></canvas>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="grid2">
+
+            <div class="box">
+
+                <h3>
+                    📊 Monthly Revenue
+                </h3>
+
+                <div class="chart-container">
+                    <canvas id="monthlyChart" style="box-sizing: border-box; display: block; height: 340px; width: 757.9px;" width="947" height="425"></canvas>
+                </div>
+
+            </div>
+
+
+            <div class="box">
+
+                <h3>
+                    📍 Region Performance
+                </h3>
+
+                <div class="chart-container">
+                    <canvas id="regionChart" style="box-sizing: border-box; display: block; height: 340px; width: 356.9px;" width="446" height="425"></canvas>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="table-box">
+
+            <h3>
+                📋 Recent Sales
+            </h3>
+
+            <table>
+
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Company</th>
+                        <th>Product</th>
+                        <th>Category</th>
+                        <th>Region</th>
+                        <th>Sales</th>
+                    </tr>
+                </thead>
+
+                <tbody id="dashboardTable">
+
+                <tr>
+
+                    <td>
+                        2026-07-20
+                    </td>
+
+                    <td>
+                        TechStore
+                    </td>
+
+                    <td>
+                        Headphones
+                    </td>
+
+                    <td>
+                        Accessories
+                    </td>
+
+                    <td>
+                        West
+                    </td>
+
+                    <td>
+                        ₹41,000
+                    </td>
+
+                </tr>
+
+            
+
+                <tr>
+
+                    <td>
+                        2026-07-12
+                    </td>
+
+                    <td>
+                        TechStore
+                    </td>
+
+                    <td>
+                        Mobile
+                    </td>
+
+                    <td>
+                        Electronics
+                    </td>
+
+                    <td>
+                        South
+                    </td>
+
+                    <td>
+                        ₹89,000
+                    </td>
+
+                </tr>
+
+            
+
+                <tr>
+
+                    <td>
+                        2026-07-05
+                    </td>
+
+                    <td>
+                        TechStore
+                    </td>
+
+                    <td>
+                        Laptop
+                    </td>
+
+                    <td>
+                        Electronics
+                    </td>
+
+                    <td>
+                        North
+                    </td>
+
+                    <td>
+                        ₹1,35,000
+                    </td>
+
+                </tr>
+
+            
+
+                <tr>
+
+                    <td>
+                        2026-06-20
+                    </td>
+
+                    <td>
+                        TechStore
+                    </td>
+
+                    <td>
+                        Headphones
+                    </td>
+
+                    <td>
+                        Accessories
+                    </td>
+
+                    <td>
+                        West
+                    </td>
+
+                    <td>
+                        ₹38,000
+                    </td>
+
+                </tr>
+
+            
+
+                <tr>
+
+                    <td>
+                        2026-06-12
+                    </td>
+
+                    <td>
+                        TechStore
+                    </td>
+
+                    <td>
+                        Mobile
+                    </td>
+
+                    <td>
+                        Electronics
+                    </td>
+
+                    <td>
+                        East
+                    </td>
+
+                    <td>
+                        ₹82,000
+                    </td>
+
+                </tr>
+
+            
+
+                <tr>
+
+                    <td>
+                        2026-06-05
+                    </td>
+
+                    <td>
+                        TechStore
+                    </td>
+
+                    <td>
+                        Laptop
+                    </td>
+
+                    <td>
+                        Electronics
+                    </td>
+
+                    <td>
+                        North
+                    </td>
+
+                    <td>
+                        ₹1,25,000
+                    </td>
+
+                </tr>
+
+            
+
+                <tr>
+
+                    <td>
+                        2026-05-20
+                    </td>
+
+                    <td>
+                        TechStore
+                    </td>
+
+                    <td>
+                        Headphones
+                    </td>
+
+                    <td>
+                        Accessories
+                    </td>
+
+                    <td>
+                        West
+                    </td>
+
+                    <td>
+                        ₹34,000
+                    </td>
+
+                </tr>
+
+            
+
+                <tr>
+
+                    <td>
+                        2026-05-12
+                    </td>
+
+                    <td>
+                        TechStore
+                    </td>
+
+                    <td>
+                        Mobile
+                    </td>
+
+                    <td>
+                        Electronics
+                    </td>
+
+                    <td>
+                        East
+                    </td>
+
+                    <td>
+                        ₹76,000
+                    </td>
+
+                </tr>
+
+            
+
+                <tr>
+
+                    <td>
+                        2026-05-05
+                    </td>
+
+                    <td>
+                        TechStore
+                    </td>
+
+                    <td>
+                        Laptop
+                    </td>
+
+                    <td>
+                        Electronics
+                    </td>
+
+                    <td>
+                        North
+                    </td>
+
+                    <td>
+                        ₹1,18,000
+                    </td>
+
+                </tr>
+
+            
+
+                <tr>
+
+                    <td>
+                        2026-04-20
+                    </td>
+
+                    <td>
+                        TechStore
+                    </td>
+
+                    <td>
+                        Headphones
+                    </td>
+
+                    <td>
+                        Accessories
+                    </td>
+
+                    <td>
+                        West
+                    </td>
+
+                    <td>
+                        ₹30,000
+                    </td>
+
+                </tr>
+
+            </tbody>
+
+            </table>
+
+        </div>
+
+    </section>
+
+
+    <!-- =================================================
+                         ANALYTICS
+    ================================================= -->
+
+    <section id="analytics" class="page">
+
+        <div class="analytics-grid">
+
+            <div class="analytics-card">
+
+                <h3>
+                    💰 Revenue
+                </h3>
+
+                <h2 id="aRevenue">₹14,65,000</h2>
+
+                <p>
+                    Total generated revenue
+                </p>
+
+            </div>
+
+
+            <div class="analytics-card">
+
+                <h3>
+                    🛒 Orders
+                </h3>
+
+                <h2 id="aOrders">21</h2>
+
+                <p>
+                    Total transactions
+                </p>
+
+            </div>
+
+
+            <div class="analytics-card">
+
+                <h3>
+                    🧾 Average Order
+                </h3>
+
+                <h2 id="aAverage">₹69,762</h2>
+
+                <p>
+                    Average order value
+                </p>
+
+            </div>
+
+
+            <div class="analytics-card">
+
+                <h3>
+                    🏆 Best Product
+                </h3>
+
+                <h2 id="bestProduct">Laptop</h2>
+
+                <p>
+                    Highest revenue
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="box">
+
+            <h2>
+                📊 Business Insights
+            </h2>
+
+            <p id="insights" style="margin-top:15px;line-height:1.8">
+
+            <strong>Revenue:</strong>
+            ₹14,65,000
+            <br>
+
+            <strong>Orders:</strong>
+            21
+            <br>
+
+            <strong>Growth:</strong>
+            8.2%
+            <br>
+
+            <strong>Best Product:</strong>
+            Laptop
+            <br>
+
+            <strong>Next Month Forecast:</strong>
+            ₹2,82,714
+            <br>
+
+            <strong>Trend:</strong>
+            Sales are increasing 📈
+
+        </p>
+
+        </div>
+
+
+        <div class="box">
+
+            <h3>
+                📈 Performance Analysis
+            </h3>
+
+            <div class="chart-container">
+                <canvas id="analyticsChart" style="box-sizing: border-box; display: block; height: 0px; width: 0px;" width="0" height="0"></canvas>
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =================================================
+                         PREDICTION
+    ================================================= -->
+
+    <section id="prediction" class="page">
+
+        <div class="box">
+
+            <h2>
+                🔮 Sales Forecasting
+            </h2>
+
+            <p style="margin-top:12px">
+                Based on historical monthly sales data.
+            </p>
+
+            <h1 id="bigForecast" style="font-size:44px;margin:20px 0">₹2,82,714</h1>
+
+            <button class="success" type="button" onclick="runPrediction()">
+                Run Forecast
+            </button>
+
+        </div>
+
+
+        <div class="box">
+
+            <h3>
+                🧠 Prediction Method
+            </h3>
+
+            <p style="margin-top:12px;line-height:1.7">
+
+                This dashboard uses a simple
+                <strong>Linear Regression</strong>
+                model on historical monthly revenue
+                to estimate the next month's sales.
+
+            </p>
+
+        </div>
+
+
+        <div class="box">
+
+            <h3>
+                📈 Forecast Visualization
+            </h3>
+
+            <div class="chart-container">
+                <canvas id="predictionChart" style="box-sizing: border-box; display: block; height: 0px; width: 0px;" width="0" height="0"></canvas>
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =================================================
+                         PRODUCTS
+    ================================================= -->
+
+    <section id="products" class="page">
+
+        <div class="product-grid" id="productsContainer">
+
+            <div class="product-card">
+
+                <h3>
+                    🛍️ Laptop
+                </h3>
+
+                <h2>
+                    ₹7,65,000
+                </h2>
+
+                <p>
+                    Total Revenue
+                </p>
+
+                <div class="progress">
+
+                    <div style="width:100%">
+                    </div>
+
+                </div>
+
+            </div>
+
+        
+
+            <div class="product-card">
+
+                <h3>
+                    🛍️ Mobile
+                </h3>
+
+                <h2>
+                    ₹4,92,000
+                </h2>
+
+                <p>
+                    Total Revenue
+                </p>
+
+                <div class="progress">
+
+                    <div style="width:64.31372549019608%">
+                    </div>
+
+                </div>
+
+            </div>
+
+        
+
+            <div class="product-card">
+
+                <h3>
+                    🛍️ Headphones
+                </h3>
+
+                <h2>
+                    ₹2,08,000
+                </h2>
+
+                <p>
+                    Total Revenue
+                </p>
+
+                <div class="progress">
+
+                    <div style="width:27.18954248366013%">
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =================================================
+                           DATA
+    ================================================= -->
+
+    <section id="data" class="page">
+
+        <div class="toolbar">
+
+            <button type="button" onclick="openModal()">
+                ➕ Add Sale
+            </button>
+
+            <button class="danger" type="button" onclick="deleteAll()">
+                🗑 Delete All
+            </button>
+
+            <button class="warning" type="button" onclick="exportCSV()">
+                📥 Export CSV
+            </button>
+
+        </div>
+
+
+        <div class="table-box">
+
+            <h3>
+                📁 Sales Dataset
+                (<span id="dataCount">21</span>)
+            </h3>
+
+            <table>
+
+                <thead>
+
+                    <tr>
+                        <th>#</th>
+                        <th>Date</th>
+                        <th>Company</th>
+                        <th>Product</th>
+                        <th>Category</th>
+                        <th>Region</th>
+                        <th>Sales</th>
+                        <th>Action</th>
+                    </tr>
+
+                </thead>
+
+                <tbody id="dataTable">
+
+                <tr>
+
+                    <td>
+                        21
+                    </td>
+
+                    <td>
+                        2026-07-20
+                    </td>
+
+                    <td>
+                        TechStore
+                    </td>
+
+                    <td>
+                        Headphones
+                    </td>
+
+                    <td>
+                        Accessories
+                    </td>
+
+                    <td>
+                        West
+                    </td>
+
+                    <td>
+                        ₹41,000
+                    </td>
+
+                    <td>
+
+                        <div class="actions">
+
+                            <button class="warning" type="button" onclick="editSale(20)">
+                                ✏️
+                            </button>
+
+                            <button class="danger" type="button" onclick="deleteSale(20)">
+                                🗑
+                            </button>
+
+                        </div>
+
+                    </td>
+
+                </tr>
+
+            
+
+                <tr>
+
+                    <td>
+                        20
+                    </td>
+
+                    <td>
+                        2026-07-12
+                    </td>
+
+                    <td>
+                        TechStore
+                    </td>
+
+                    <td>
+                        Mobile
+                    </td>
+
+                    <td>
+                        Electronics
+                    </td>
+
+                    <td>
+                        South
+                    </td>
+
+                    <td>
+                        ₹89,000
+                    </td>
+
+                    <td>
+
+                        <div class="actions">
+
+                            <button class="warning" type="button" onclick="editSale(19)">
+                                ✏️
+                            </button>
+
+                            <button class="danger" type="button" onclick="deleteSale(19)">
+                                🗑
+                            </button>
+
+                        </div>
+
+                    </td>
+
+                </tr>
+
+            
+
+                <tr>
+
+                    <td>
+                        19
+                    </td>
+
+                    <td>
+                        2026-07-05
+                    </td>
+
+                    <td>
+                        TechStore
+                    </td>
+
+                    <td>
+                        Laptop
+                    </td>
+
+                    <td>
+                        Electronics
+                    </td>
+
+                    <td>
+                        North
+                    </td>
+
+                    <td>
+                        ₹1,35,000
+                    </td>
+
+                    <td>
+
+                        <div class="actions">
+
+                            <button class="warning" type="button" onclick="editSale(18)">
+                                ✏️
+                            </button>
+
+                            <button class="danger" type="button" onclick="deleteSale(18)">
+                                🗑
+                            </button>
+
+                        </div>
+
+                    </td>
+
+                </tr>
+
+            
+
+                <tr>
+
+                    <td>
+                        18
+                    </td>
+
+                    <td>
+                        2026-06-20
+                    </td>
+
+                    <td>
+                        TechStore
+                    </td>
+
+                    <td>
+                        Headphones
+                    </td>
+
+                    <td>
+                        Accessories
+                    </td>
+
+                    <td>
+                        West
+                    </td>
+
+                    <td>
+                        ₹38,000
+                    </td>
+
+                    <td>
+
+                        <div class="actions">
+
+                            <button class="warning" type="button" onclick="editSale(17)">
+                                ✏️
+                            </button>
+
+                            <button class="danger" type="button" onclick="deleteSale(17)">
+                                🗑
+                            </button>
+
+                        </div>
+
+                    </td>
+
+                </tr>
+
+            
+
+                <tr>
+
+                    <td>
+                        17
+                    </td>
+
+                    <td>
+                        2026-06-12
+                    </td>
+
+                    <td>
+                        TechStore
+                    </td>
+
+                    <td>
+                        Mobile
+                    </td>
+
+                    <td>
+                        Electronics
+                    </td>
+
+                    <td>
+                        East
+                    </td>
+
+                    <td>
+                        ₹82,000
+                    </td>
+
+                    <td>
+
+                        <div class="actions">
+
+                            <button class="warning" type="button" onclick="editSale(16)">
+                                ✏️
+                            </button>
+
+                            <button class="danger" type="button" onclick="deleteSale(16)">
+                                🗑
+                            </button>
+
+                        </div>
+
+                    </td>
+
+                </tr>
+
+            
+
+                <tr>
+
+                    <td>
+                        16
+                    </td>
+
+                    <td>
+                        2026-06-05
+                    </td>
+
+                    <td>
+                        TechStore
+                    </td>
+
+                    <td>
+                        Laptop
+                    </td>
+
+                    <td>
+                        Electronics
+                    </td>
+
+                    <td>
+                        North
+                    </td>
+
+                    <td>
+                        ₹1,25,000
+                    </td>
+
+                    <td>
+
+                        <div class="actions">
+
+                            <button class="warning" type="button" onclick="editSale(15)">
+                                ✏️
+                            </button>
+
+                            <button class="danger" type="button" onclick="deleteSale(15)">
+                                🗑
+                            </button>
+
+                        </div>
+
+                    </td>
+
+                </tr>
+
+            
+
+                <tr>
+
+                    <td>
+                        15
+                    </td>
+
+                    <td>
+                        2026-05-20
+                    </td>
+
+                    <td>
+                        TechStore
+                    </td>
+
+                    <td>
+                        Headphones
+                    </td>
+
+                    <td>
+                        Accessories
+                    </td>
+
+                    <td>
+                        West
+                    </td>
+
+                    <td>
+                        ₹34,000
+                    </td>
+
+                    <td>
+
+                        <div class="actions">
+
+                            <button class="warning" type="button" onclick="editSale(14)">
+                                ✏️
+                            </button>
+
+                            <button class="danger" type="button" onclick="deleteSale(14)">
+                                🗑
+                            </button>
+
+                        </div>
+
+                    </td>
+
+                </tr>
+
+            
+
+                <tr>
+
+                    <td>
+                        14
+                    </td>
+
+                    <td>
+                        2026-05-12
+                    </td>
+
+                    <td>
+                        TechStore
+                    </td>
+
+                    <td>
+                        Mobile
+                    </td>
+
+                    <td>
+                        Electronics
+                    </td>
+
+                    <td>
+                        East
+                    </td>
+
+                    <td>
+                        ₹76,000
+                    </td>
+
+                    <td>
+
+                        <div class="actions">
+
+                            <button class="warning" type="button" onclick="editSale(13)">
+                                ✏️
+                            </button>
+
+                            <button class="danger" type="button" onclick="deleteSale(13)">
+                                🗑
+                            </button>
+
+                        </div>
+
+                    </td>
+
+                </tr>
+
+            
+
+                <tr>
+
+                    <td>
+                        13
+                    </td>
+
+                    <td>
+                        2026-05-05
+                    </td>
+
+                    <td>
+                        TechStore
+                    </td>
+
+                    <td>
+                        Laptop
+                    </td>
+
+                    <td>
+                        Electronics
+                    </td>
+
+                    <td>
+                        North
+                    </td>
+
+                    <td>
+                        ₹1,18,000
+                    </td>
+
+                    <td>
+
+                        <div class="actions">
+
+                            <button class="warning" type="button" onclick="editSale(12)">
+                                ✏️
+                            </button>
+
+                            <button class="danger" type="button" onclick="deleteSale(12)">
+                                🗑
+                            </button>
+
+                        </div>
+
+                    </td>
+
+                </tr>
+
+            
+
+                <tr>
+
+                    <td>
+                        12
+                    </td>
+
+                    <td>
+                        2026-04-20
+                    </td>
+
+                    <td>
+                        TechStore
+                    </td>
+
+                    <td>
+                        Headphones
+                    </td>
+
+                    <td>
+                        Accessories
+                    </td>
+
+                    <td>
+                        West
+                    </td>
+
+                    <td>
+                        ₹30,000
+                    </td>
+
+                    <td>
+
+                        <div class="actions">
+
+                            <button class="warning" type="button" onclick="editSale(11)">
+                                ✏️
+                            </button>
+
+                            <button class="danger" type="button" onclick="deleteSale(11)">
+                                🗑
+                            </button>
+
+                        </div>
+
+                    </td>
+
+                </tr>
+
+            
+
+                <tr>
+
+                    <td>
+                        11
+                    </td>
+
+                    <td>
+                        2026-04-12
+                    </td>
+
+                    <td>
+                        TechStore
+                    </td>
+
+                    <td>
+                        Mobile
+                    </td>
+
+                    <td>
+                        Electronics
+                    </td>
+
+                    <td>
+                        South
+                    </td>
+
+                    <td>
+                        ₹70,000
+                    </td>
+
+                    <td>
+
+                        <div class="actions">
+
+                            <button class="warning" type="button" onclick="editSale(10)">
+                                ✏️
+                            </button>
+
+                            <button class="danger" type="button" onclick="deleteSale(10)">
+                                🗑
+                            </button>
+
+                        </div>
+
+                    </td>
+
+                </tr>
+
+            
+
+                <tr>
+
+                    <td>
+                        10
+                    </td>
+
+                    <td>
+                        2026-04-05
+                    </td>
+
+                    <td>
+                        TechStore
+                    </td>
+
+                    <td>
+                        Laptop
+                    </td>
+
+                    <td>
+                        Electronics
+                    </td>
+
+                    <td>
+                        North
+                    </td>
+
+                    <td>
+                        ₹1,10,000
+                    </td>
+
+                    <td>
+
+                        <div class="actions">
+
+                            <button class="warning" type="button" onclick="editSale(9)">
+                                ✏️
+                            </button>
+
+                            <button class="danger" type="button" onclick="deleteSale(9)">
+                                🗑
+                            </button>
+
+                        </div>
+
+                    </td>
+
+                </tr>
+
+            
+
+                <tr>
+
+                    <td>
+                        9
+                    </td>
+
+                    <td>
+                        2026-03-20
+                    </td>
+
+                    <td>
+                        TechStore
+                    </td>
+
+                    <td>
+                        Headphones
+                    </td>
+
+                    <td>
+                        Accessories
+                    </td>
+
+                    <td>
+                        West
+                    </td>
+
+                    <td>
+                        ₹25,000
+                    </td>
+
+                    <td>
+
+                        <div class="actions">
+
+                            <button class="warning" type="button" onclick="editSale(8)">
+                                ✏️
+                            </button>
+
+                            <button class="danger" type="button" onclick="deleteSale(8)">
+                                🗑
+                            </button>
+
+                        </div>
+
+                    </td>
+
+                </tr>
+
+            
+
+                <tr>
+
+                    <td>
+                        8
+                    </td>
+
+                    <td>
+                        2026-03-12
+                    </td>
+
+                    <td>
+                        TechStore
+                    </td>
+
+                    <td>
+                        Mobile
+                    </td>
+
+                    <td>
+                        Electronics
+                    </td>
+
+                    <td>
+                        South
+                    </td>
+
+                    <td>
+                        ₹65,000
+                    </td>
+
+                    <td>
+
+                        <div class="actions">
+
+                            <button class="warning" type="button" onclick="editSale(7)">
+                                ✏️
+                            </button>
+
+                            <button class="danger" type="button" onclick="deleteSale(7)">
+                                🗑
+                            </button>
+
+                        </div>
+
+                    </td>
+
+                </tr>
+
+            
+
+                <tr>
+
+                    <td>
+                        7
+                    </td>
+
+                    <td>
+                        2026-03-05
+                    </td>
+
+                    <td>
+                        TechStore
+                    </td>
+
+                    <td>
+                        Laptop
+                    </td>
+
+                    <td>
+                        Electronics
+                    </td>
+
+                    <td>
+                        North
+                    </td>
+
+                    <td>
+                        ₹1,00,000
+                    </td>
+
+                    <td>
+
+                        <div class="actions">
+
+                            <button class="warning" type="button" onclick="editSale(6)">
+                                ✏️
+                            </button>
+
+                            <button class="danger" type="button" onclick="deleteSale(6)">
+                                🗑
+                            </button>
+
+                        </div>
+
+                    </td>
+
+                </tr>
+
+            
+
+                <tr>
+
+                    <td>
+                        6
+                    </td>
+
+                    <td>
+                        2026-02-20
+                    </td>
+
+                    <td>
+                        TechStore
+                    </td>
+
+                    <td>
+                        Headphones
+                    </td>
+
+                    <td>
+                        Accessories
+                    </td>
+
+                    <td>
+                        West
+                    </td>
+
+                    <td>
+                        ₹22,000
+                    </td>
+
+                    <td>
+
+                        <div class="actions">
+
+                            <button class="warning" type="button" onclick="editSale(5)">
+                                ✏️
+                            </button>
+
+                            <button class="danger" type="button" onclick="deleteSale(5)">
+                                🗑
+                            </button>
+
+                        </div>
+
+                    </td>
+
+                </tr>
+
+            
+
+                <tr>
+
+                    <td>
+                        5
+                    </td>
+
+                    <td>
+                        2026-02-12
+                    </td>
+
+                    <td>
+                        TechStore
+                    </td>
+
+                    <td>
+                        Mobile
+                    </td>
+
+                    <td>
+                        Electronics
+                    </td>
+
+                    <td>
+                        North
+                    </td>
+
+                    <td>
+                        ₹58,000
+                    </td>
+
+                    <td>
+
+                        <div class="actions">
+
+                            <button class="warning" type="button" onclick="editSale(4)">
+                                ✏️
+                            </button>
+
+                            <button class="danger" type="button" onclick="deleteSale(4)">
+                                🗑
+                            </button>
+
+                        </div>
+
+                    </td>
+
+                </tr>
+
+            
+
+                <tr>
+
+                    <td>
+                        4
+                    </td>
+
+                    <td>
+                        2026-02-05
+                    </td>
+
+                    <td>
+                        TechStore
+                    </td>
+
+                    <td>
+                        Laptop
+                    </td>
+
+                    <td>
+                        Electronics
+                    </td>
+
+                    <td>
+                        North
+                    </td>
+
+                    <td>
+                        ₹92,000
+                    </td>
+
+                    <td>
+
+                        <div class="actions">
+
+                            <button class="warning" type="button" onclick="editSale(3)">
+                                ✏️
+                            </button>
+
+                            <button class="danger" type="button" onclick="deleteSale(3)">
+                                🗑
+                            </button>
+
+                        </div>
+
+                    </td>
+
+                </tr>
+
+            
+
+                <tr>
+
+                    <td>
+                        3
+                    </td>
+
+                    <td>
+                        2026-01-18
+                    </td>
+
+                    <td>
+                        TechStore
+                    </td>
+
+                    <td>
+                        Headphones
+                    </td>
+
+                    <td>
+                        Accessories
+                    </td>
+
+                    <td>
+                        West
+                    </td>
+
+                    <td>
+                        ₹18,000
+                    </td>
+
+                    <td>
+
+                        <div class="actions">
+
+                            <button class="warning" type="button" onclick="editSale(2)">
+                                ✏️
+                            </button>
+
+                            <button class="danger" type="button" onclick="deleteSale(2)">
+                                🗑
+                            </button>
+
+                        </div>
+
+                    </td>
+
+                </tr>
+
+            
+
+                <tr>
+
+                    <td>
+                        2
+                    </td>
+
+                    <td>
+                        2026-01-12
+                    </td>
+
+                    <td>
+                        TechStore
+                    </td>
+
+                    <td>
+                        Mobile
+                    </td>
+
+                    <td>
+                        Electronics
+                    </td>
+
+                    <td>
+                        North
+                    </td>
+
+                    <td>
+                        ₹52,000
+                    </td>
+
+                    <td>
+
+                        <div class="actions">
+
+                            <button class="warning" type="button" onclick="editSale(1)">
+                                ✏️
+                            </button>
+
+                            <button class="danger" type="button" onclick="deleteSale(1)">
+                                🗑
+                            </button>
+
+                        </div>
+
+                    </td>
+
+                </tr>
+
+            
+
+                <tr>
+
+                    <td>
+                        1
+                    </td>
+
+                    <td>
+                        2026-01-05
+                    </td>
+
+                    <td>
+                        TechStore
+                    </td>
+
+                    <td>
+                        Laptop
+                    </td>
+
+                    <td>
+                        Electronics
+                    </td>
+
+                    <td>
+                        North
+                    </td>
+
+                    <td>
+                        ₹85,000
+                    </td>
+
+                    <td>
+
+                        <div class="actions">
+
+                            <button class="warning" type="button" onclick="editSale(0)">
+                                ✏️
+                            </button>
+
+                            <button class="danger" type="button" onclick="deleteSale(0)">
+                                🗑
+                            </button>
+
+                        </div>
+
+                    </td>
+
+                </tr>
+
+            </tbody>
+
+            </table>
+
+        </div>
+
+    </section>
+
+</div>
+
+
+<!-- =====================================================
+                          MODAL
+===================================================== -->
+
+<div class="modal" id="saleModal">
+
+    <div class="modal-content">
+
+        <h2 id="modalTitle">
+            ➕ Add Sale
+        </h2>
+
+        <br>
+
+        <div class="field">
+
+            <label>
+                Date
+            </label>
+
+            <input type="date" id="saleDate">
+
+        </div>
+
+
+        <div class="field">
+
+            <label>
+                Company
+            </label>
+
+            <input type="text" id="saleCompany" placeholder="Example: TechStore">
+
+        </div>
+
+
+        <div class="field">
+
+            <label>
+                Product
+            </label>
+
+            <input type="text" id="saleProduct" placeholder="Example: Laptop">
+
+        </div>
+
+
+        <div class="field">
+
+            <label>
+                Category
+            </label>
+
+            <input type="text" id="saleCategory" placeholder="Example: Electronics">
+
+        </div>
+
+
+        <div class="field">
+
+            <label>
+                Region
+            </label>
+
+            <input type="text" id="saleRegion" placeholder="Example: North">
+
+        </div>
+
+
+        <div class="field">
+
+            <label>
+                Sales Amount
+            </label>
+
+            <input type="number" id="saleAmount" min="1" placeholder="50000">
+
+        </div>
+
+
+        <div class="modal-buttons">
+
+            <button class="secondary" type="button" onclick="closeModal()">
+                Cancel
+            </button>
+
+            <button type="button" onclick="saveSale()">
+                Save Sale
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+/* =====================================================
+                       SAMPLE DATA
+===================================================== */
+
+const defaultData = [
+
+{
+    date:"2026-01-05",
+    company:"TechStore",
+    product:"Laptop",
+    category:"Electronics",
+    region:"North",
+    sales:85000
+},
+
+{
+    date:"2026-01-12",
+    company:"TechStore",
+    product:"Mobile",
+    category:"Electronics",
+    region:"North",
+    sales:52000
+},
+
+{
+    date:"2026-01-18",
+    company:"TechStore",
+    product:"Headphones",
+    category:"Accessories",
+    region:"West",
+    sales:18000
+},
+
+{
+    date:"2026-02-05",
+    company:"TechStore",
+    product:"Laptop",
+    category:"Electronics",
+    region:"North",
+    sales:92000
+},
+
+{
+    date:"2026-02-12",
+    company:"TechStore",
+    product:"Mobile",
+    category:"Electronics",
+    region:"North",
+    sales:58000
+},
+
+{
+    date:"2026-02-20",
+    company:"TechStore",
+    product:"Headphones",
+    category:"Accessories",
+    region:"West",
+    sales:22000
+},
+
+{
+    date:"2026-03-05",
+    company:"TechStore",
+    product:"Laptop",
+    category:"Electronics",
+    region:"North",
+    sales:100000
+},
+
+{
+    date:"2026-03-12",
+    company:"TechStore",
+    product:"Mobile",
+    category:"Electronics",
+    region:"South",
+    sales:65000
+},
+
+{
+    date:"2026-03-20",
+    company:"TechStore",
+    product:"Headphones",
+    category:"Accessories",
+    region:"West",
+    sales:25000
+},
+
+{
+    date:"2026-04-05",
+    company:"TechStore",
+    product:"Laptop",
+    category:"Electronics",
+    region:"North",
+    sales:110000
+},
+
+{
+    date:"2026-04-12",
+    company:"TechStore",
+    product:"Mobile",
+    category:"Electronics",
+    region:"South",
+    sales:70000
+},
+
+{
+    date:"2026-04-20",
+    company:"TechStore",
+    product:"Headphones",
+    category:"Accessories",
+    region:"West",
+    sales:30000
+},
+
+{
+    date:"2026-05-05",
+    company:"TechStore",
+    product:"Laptop",
+    category:"Electronics",
+    region:"North",
+    sales:118000
+},
+
+{
+    date:"2026-05-12",
+    company:"TechStore",
+    product:"Mobile",
+    category:"Electronics",
+    region:"East",
+    sales:76000
+},
+
+{
+    date:"2026-05-20",
+    company:"TechStore",
+    product:"Headphones",
+    category:"Accessories",
+    region:"West",
+    sales:34000
+},
+
+{
+    date:"2026-06-05",
+    company:"TechStore",
+    product:"Laptop",
+    category:"Electronics",
+    region:"North",
+    sales:125000
+},
+
+{
+    date:"2026-06-12",
+    company:"TechStore",
+    product:"Mobile",
+    category:"Electronics",
+    region:"East",
+    sales:82000
+},
+
+{
+    date:"2026-06-20",
+    company:"TechStore",
+    product:"Headphones",
+    category:"Accessories",
+    region:"West",
+    sales:38000
+},
+
+{
+    date:"2026-07-05",
+    company:"TechStore",
+    product:"Laptop",
+    category:"Electronics",
+    region:"North",
+    sales:135000
+},
+
+{
+    date:"2026-07-12",
+    company:"TechStore",
+    product:"Mobile",
+    category:"Electronics",
+    region:"South",
+    sales:89000
+},
+
+{
+    date:"2026-07-20",
+    company:"TechStore",
+    product:"Headphones",
+    category:"Accessories",
+    region:"West",
+    sales:41000
+}
+];
+
+
+/* =====================================================
+                         VARIABLES
+===================================================== */
+
+let salesData =
+JSON.parse(
+    localStorage.getItem("salesAIDataset")
+) || [...defaultData];
+
+let filteredData = [...salesData];
+
+let editIndex = -1;
+
+let charts = {};
+
+
+/* =====================================================
+                          STORAGE
+===================================================== */
+
+function saveData(){
+
+    localStorage.setItem(
+        "salesAIDataset",
+        JSON.stringify(salesData)
+    );
+
+}
+
+
+/* =====================================================
+                           MONEY
+===================================================== */
+
+function money(value){
+
+    return "₹" +
+        Math.round(Number(value) || 0)
+        .toLocaleString("en-IN");
+
+}
+
+
+/* =====================================================
+                         ESCAPE HTML
+===================================================== */
+
+function escapeHTML(text){
+
+    return String(text)
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;")
+        .replace(/'/g,"&#039;");
+
+}
+
+
+/* =====================================================
+                         NAVIGATION
+===================================================== */
+
+function showPage(page,el){
+
+    document
+        .querySelectorAll(".page")
+        .forEach(p =>
+            p.classList.remove("active")
+        );
+
+    document
+        .getElementById(page)
+        .classList.add("active");
+
+    document
+        .querySelectorAll(".menu li")
+        .forEach(x =>
+            x.classList.remove("active")
+        );
+
+    if(el){
+        el.classList.add("active");
+    }
+
+    const titles = {
+
+        dashboard:[
+            "Sales Prediction Dashboard",
+            "Power BI Style Sales Analytics"
+        ],
+
+        analytics:[
+            "Sales Analytics",
+            "Business performance insights"
+        ],
+
+        prediction:[
+            "Sales Prediction",
+            "Monthly sales forecasting"
+        ],
+
+        products:[
+            "Product Performance",
+            "Product-wise revenue analysis"
+        ],
+
+        data:[
+            "Sales Dataset",
+            "Manage company sales records"
+        ]
+
+    };
+
+    document.getElementById("pageTitle").innerText =
+        titles[page][0];
+
+    document.getElementById("pageSubtitle").innerText =
+        titles[page][1];
+
+}
+
+
+/* =====================================================
+                       MONTHLY SALES
+===================================================== */
+
+function monthlySales(data){
+
+    let result = {};
+
+    data.forEach(item => {
+
+        let month =
+            item.date.substring(0,7);
+
+        result[month] =
+            (result[month] || 0) +
+            Number(item.sales);
+
+    });
+
+    return result;
+
+}
+
+
+/* =====================================================
+                       FORECAST
+===================================================== */
+
+function forecast(data){
+
+    const monthly =
+        monthlySales(data);
+
+    const values =
+        Object.values(monthly);
+
+    if(!values.length){
+        return 0;
+    }
+
+    if(values.length === 1){
+        return values[0];
+    }
+
+    let n = values.length;
+
+    let sx = 0;
+    let sy = 0;
+    let sxy = 0;
+    let sx2 = 0;
+
+    values.forEach((y,i) => {
+
+        let x = i + 1;
+
+        sx += x;
+        sy += y;
+        sxy += x * y;
+        sx2 += x * x;
+
+    });
+
+    let denominator =
+        n * sx2 - sx * sx;
+
+    if(!denominator){
+        return values[values.length - 1];
+    }
+
+    let slope =
+        (n * sxy - sx * sy) /
+        denominator;
+
+    let intercept =
+        (sy - slope * sx) / n;
+
+    return Math.max(
+        0,
+        slope * (n + 1) + intercept
+    );
+
+}
+
+
+/* =====================================================
+                         GROWTH
+===================================================== */
+
+function growthRate(data){
+
+    const monthly =
+        monthlySales(data);
+
+    const values =
+        Object.values(monthly);
+
+    if(values.length < 2){
+        return 0;
+    }
+
+    let previous =
+        values[values.length - 2];
+
+    let current =
+        values[values.length - 1];
+
+    if(previous === 0){
+        return 0;
+    }
+
+    return (
+        (current - previous) /
+        previous
+    ) * 100;
+
+}
+
+
+/* =====================================================
+                      DASHBOARD
+===================================================== */
+
+function updateDashboard(data = filteredData){
+
+    filteredData = [...data];
+
+    let total =
+        data.reduce(
+            (a,b) =>
+                a + Number(b.sales),
+            0
+        );
+
+    let orders = data.length;
+
+    let predicted =
+        forecast(data);
+
+    let growth =
+        growthRate(data);
+
+
+    document.getElementById("totalRevenue")
+        .innerText = money(total);
+
+    document.getElementById("totalOrders")
+        .innerText = orders;
+
+    document.getElementById("growth")
+        .innerText =
+            growth.toFixed(1) + "%";
+
+    document.getElementById("forecast")
+        .innerText = money(predicted);
+
+    document.getElementById("bigForecast")
+        .innerText = money(predicted);
+
+
+    document.getElementById("aRevenue")
+        .innerText = money(total);
+
+    document.getElementById("aOrders")
+        .innerText = orders;
+
+    document.getElementById("aAverage")
+        .innerText =
+            orders
+            ? money(total / orders)
+            : "₹0";
+
+
+    let products = {};
+
+    data.forEach(item => {
+
+        products[item.product] =
+            (products[item.product] || 0) +
+            Number(item.sales);
+
+    });
+
+
+    let best = "-";
+
+    if(Object.keys(products).length){
+
+        best =
+            Object.entries(products)
+                .sort((a,b) => b[1] - a[1])[0][0];
+
+    }
+
+
+    document.getElementById("bestProduct")
+        .innerText = best;
+
+
+    let trend =
+        growth >= 0
+        ? "Sales are increasing 📈"
+        : "Sales are decreasing 📉";
+
+
+    document.getElementById("insights")
+        .innerHTML = `
+
+            <strong>Revenue:</strong>
+            ${money(total)}
+            <br>
+
+            <strong>Orders:</strong>
+            ${orders}
+            <br>
+
+            <strong>Growth:</strong>
+            ${growth.toFixed(1)}%
+            <br>
+
+            <strong>Best Product:</strong>
+            ${escapeHTML(best)}
+            <br>
+
+            <strong>Next Month Forecast:</strong>
+            ${money(predicted)}
+            <br>
+
+            <strong>Trend:</strong>
+            ${trend}
+
+        `;
+
+
+    drawCharts(data,predicted);
+
+    drawProducts(data);
+
+    drawTables(data);
+
+    drawDataTable();
+
+    loadFilters();
+
+}
+
+
+/* =====================================================
+                         FILTERS
+===================================================== */
+
+function loadFilters(){
+
+    fillSelect(
+        "companyFilter",
+        [...new Set(
+            salesData.map(x => x.company)
+        )]
+    );
+
+    fillSelect(
+        "categoryFilter",
+        [...new Set(
+            salesData.map(x => x.category)
+        )]
+    );
+
+    fillSelect(
+        "regionFilter",
+        [...new Set(
+            salesData.map(x => x.region)
+        )]
+    );
+
+}
+
+
+function fillSelect(id,values){
+
+    const select =
+        document.getElementById(id);
+
+    const current =
+        select.value;
+
+    let first;
+
+    if(id === "companyFilter"){
+        first = "All Companies";
+    }
+    else if(id === "categoryFilter"){
+        first = "All Categories";
+    }
+    else{
+        first = "All Regions";
+    }
+
+    select.innerHTML =
+        `<option value="All">${first}</option>`;
+
+    values.forEach(value => {
+
+        const option =
+            document.createElement("option");
+
+        option.value = value;
+        option.textContent = value;
+
+        select.appendChild(option);
+
+    });
+
+    if(values.includes(current)){
+        select.value = current;
+    }
+
+}
+
+
+function applyFilters(){
+
+    let company =
+        document.getElementById("companyFilter")
+        .value;
+
+    let category =
+        document.getElementById("categoryFilter")
+        .value;
+
+    let region =
+        document.getElementById("regionFilter")
+        .value;
+
+    let from =
+        document.getElementById("fromDate")
+        .value;
+
+    let to =
+        document.getElementById("toDate")
+        .value;
+
+
+    if(from && to && from > to){
+
+        alert(
+            "From Date cannot be greater than To Date."
+        );
+
+        return;
+
+    }
+
+
+    filteredData =
+        salesData.filter(item => {
+
+            return (
+
+                (company === "All" ||
+                    item.company === company)
+
+                &&
+
+                (category === "All" ||
+                    item.category === category)
+
+                &&
+
+                (region === "All" ||
+                    item.region === region)
+
+                &&
+
+                (!from ||
+                    item.date >= from)
+
+                &&
+
+                (!to ||
+                    item.date <= to)
+
+            );
+
+        });
+
+
+    document.getElementById("filterStatus")
+        .innerText =
+        `Showing ${filteredData.length} of ${salesData.length} records`;
+
+    updateDashboard(filteredData);
+
+}
+
+
+function resetFilters(){
+
+    document.getElementById("companyFilter")
+        .value = "All";
+
+    document.getElementById("categoryFilter")
+        .value = "All";
+
+    document.getElementById("regionFilter")
+        .value = "All";
+
+    document.getElementById("fromDate")
+        .value = "";
+
+    document.getElementById("toDate")
+        .value = "";
+
+    filteredData =
+        [...salesData];
+
+    document.getElementById("filterStatus")
+        .innerText =
+        `Showing all ${salesData.length} sales records`;
+
+    updateDashboard(filteredData);
+
+}
+
+
+/* =====================================================
+                         CHARTS
+===================================================== */
+
+function destroy(name){
+
+    if(charts[name]){
+
+        charts[name].destroy();
+
+        charts[name] = null;
+
+    }
+
+}
+
+
+function drawCharts(data,predicted){
+
+    destroy("sales");
+    destroy("category");
+    destroy("monthly");
+    destroy("region");
+    destroy("analytics");
+    destroy("prediction");
+
+
+    const monthly =
+        monthlySales(data);
+
+    const labels =
+        Object.keys(monthly);
+
+    const values =
+        Object.values(monthly);
+
+
+    /* ACTUAL + FORECAST */
+
+    let chartLabels =
+        [...labels];
+
+    if(values.length){
+        chartLabels.push("Next Month");
+    }
+
+
+    let actualData =
+        [...values];
+
+    if(values.length){
+        actualData.push(null);
+    }
+
+
+    let forecastData =
+        values.map(() => null);
+
+    if(values.length){
+        forecastData.push(predicted);
+    }
+
+
+    charts.sales =
+        new Chart(
+            document.getElementById("salesChart"),
+            {
+
+                type:"line",
+
+                data:{
+                    labels:chartLabels,
+
+                    datasets:[
+
+                        {
+                            label:"Actual Sales",
+                            data:actualData,
+                            borderWidth:3,
+                            tension:.3,
+                            fill:true
+                        },
+
+                        {
+                            label:"Forecast",
+                            data:forecastData,
+                            borderWidth:3,
+                            borderDash:[8,5],
+                            tension:.3
+                        }
+
+                    ]
+
+                },
+
+                options:{
+                    responsive:true,
+                    maintainAspectRatio:false,
+                    interaction:{
+                        mode:"index",
+                        intersect:false
+                    }
+                }
+
+            }
+        );
+
+
+    /* CATEGORY */
+
+    let categories = {};
+
+    data.forEach(item => {
+
+        categories[item.category] =
+            (categories[item.category] || 0) +
+            Number(item.sales);
+
+    });
+
+
+    charts.category =
+        new Chart(
+            document.getElementById("categoryChart"),
+            {
+
+                type:"doughnut",
+
+                data:{
+                    labels:Object.keys(categories),
+
+                    datasets:[{
+                        data:Object.values(categories),
+                        borderWidth:2
+                    }]
+                },
+
+                options:{
+                    responsive:true,
+                    maintainAspectRatio:false,
+
+                    plugins:{
+                        legend:{
+                            position:"bottom"
+                        }
+                    }
+                }
+
+            }
+        );
+
+
+    /* MONTHLY */
+
+    charts.monthly =
+        new Chart(
+            document.getElementById("monthlyChart"),
+            {
+
+                type:"bar",
+
+                data:{
+                    labels:labels,
+
+                    datasets:[{
+                        label:"Monthly Revenue",
+                        data:values,
+                        borderRadius:7
+                    }]
+                },
+
+                options:{
+                    responsive:true,
+                    maintainAspectRatio:false
+                }
+
+            }
+        );
+
+
+    /* REGION */
+
+    let regions = {};
+
+    data.forEach(item => {
+
+        regions[item.region] =
+            (regions[item.region] || 0) +
+            Number(item.sales);
+
+    });
+
+
+    charts.region =
+        new Chart(
+            document.getElementById("regionChart"),
+            {
+
+                type:"bar",
+
+                data:{
+                    labels:Object.keys(regions),
+
+                    datasets:[{
+                        label:"Regional Sales",
+                        data:Object.values(regions),
+                        borderRadius:7
+                    }]
+                },
+
+                options:{
+                    responsive:true,
+                    maintainAspectRatio:false,
+                    indexAxis:"y"
+                }
+
+            }
+        );
+
+
+    /* ANALYTICS */
+
+    charts.analytics =
+        new Chart(
+            document.getElementById("analyticsChart"),
+            {
+
+                type:"line",
+
+                data:{
+                    labels:labels,
+
+                    datasets:[{
+                        label:"Sales Performance",
+                        data:values,
+                        borderWidth:3,
+                        tension:.3,
+                        fill:true
+                    }]
+                },
+
+                options:{
+                    responsive:true,
+                    maintainAspectRatio:false
+                }
+
+            }
+        );
+
+
+    /* PREDICTION */
+
+    let predictionValues =
+        [...values];
+
+    if(values.length){
+        predictionValues.push(predicted);
+    }
+
+
+    charts.prediction =
+        new Chart(
+            document.getElementById("predictionChart"),
+            {
+
+                type:"line",
+
+                data:{
+                    labels:chartLabels,
+
+                    datasets:[{
+                        label:"Actual + Forecast",
+                        data:predictionValues,
+                        borderWidth:3,
+                        tension:.3,
+                        fill:true
+                    }]
+                },
+
+                options:{
+                    responsive:true,
+                    maintainAspectRatio:false
+                }
+
+            }
+        );
+
+}
+
+
+/* =====================================================
+                         PRODUCTS
+===================================================== */
+
+function drawProducts(data){
+
+    const container =
+        document.getElementById(
+            "productsContainer"
+        );
+
+    container.innerHTML = "";
+
+    let products = {};
+
+    data.forEach(item => {
+
+        products[item.product] =
+            (products[item.product] || 0) +
+            Number(item.sales);
+
+    });
+
+
+    let entries =
+        Object.entries(products)
+            .sort((a,b) => b[1] - a[1]);
+
+
+    if(!entries.length){
+
+        container.innerHTML =
+            "<p>No product data available.</p>";
+
+        return;
+
+    }
+
+
+    let max =
+        entries[0][1];
+
+
+    entries.forEach(([product,value]) => {
+
+        let percent =
+            (value / max) * 100;
+
+
+        container.innerHTML += `
+
+            <div class="product-card">
+
+                <h3>
+                    🛍️ ${escapeHTML(product)}
+                </h3>
+
+                <h2>
+                    ${money(value)}
+                </h2>
+
+                <p>
+                    Total Revenue
+                </p>
+
+                <div class="progress">
+
+                    <div
+                        style="width:${percent}%">
+                    </div>
+
+                </div>
+
+            </div>
+
+        `;
+
+    });
+
+}
+
+
+/* =====================================================
+                    DASHBOARD TABLE
+===================================================== */
+
+function drawTables(data){
+
+    const table =
+        document.getElementById(
+            "dashboardTable"
+        );
+
+    table.innerHTML = "";
+
+
+    data
+        .slice()
+        .sort(
+            (a,b) =>
+                new Date(b.date) -
+                new Date(a.date)
+        )
+        .slice(0,10)
+        .forEach(item => {
+
+            table.innerHTML += `
+
+                <tr>
+
+                    <td>
+                        ${escapeHTML(item.date)}
+                    </td>
+
+                    <td>
+                        ${escapeHTML(item.company)}
+                    </td>
+
+                    <td>
+                        ${escapeHTML(item.product)}
+                    </td>
+
+                    <td>
+                        ${escapeHTML(item.category)}
+                    </td>
+
+                    <td>
+                        ${escapeHTML(item.region)}
+                    </td>
+
+                    <td>
+                        ${money(item.sales)}
+                    </td>
+
+                </tr>
+
+            `;
+
+        });
+
+}
+
+
+/* =====================================================
+                       DATA TABLE
+===================================================== */
+
+function drawDataTable(){
+
+    const table =
+        document.getElementById(
+            "dataTable"
+        );
+
+    table.innerHTML = "";
+
+    document.getElementById("dataCount")
+        .innerText =
+        salesData.length;
+
+
+    salesData
+        .map((item,index) => ({
+            item,
+            index
+        }))
+        .sort(
+            (a,b) =>
+                new Date(b.item.date) -
+                new Date(a.item.date)
+        )
+        .forEach(({item,index}) => {
+
+            table.innerHTML += `
+
+                <tr>
+
+                    <td>
+                        ${index + 1}
+                    </td>
+
+                    <td>
+                        ${escapeHTML(item.date)}
+                    </td>
+
+                    <td>
+                        ${escapeHTML(item.company)}
+                    </td>
+
+                    <td>
+                        ${escapeHTML(item.product)}
+                    </td>
+
+                    <td>
+                        ${escapeHTML(item.category)}
+                    </td>
+
+                    <td>
+                        ${escapeHTML(item.region)}
+                    </td>
+
+                    <td>
+                        ${money(item.sales)}
+                    </td>
+
+                    <td>
+
+                        <div class="actions">
+
+                            <button
+                                class="warning"
+                                type="button"
+                                onclick="editSale(${index})">
+                                ✏️
+                            </button>
+
+                            <button
+                                class="danger"
+                                type="button"
+                                onclick="deleteSale(${index})">
+                                🗑
+                            </button>
+
+                        </div>
+
+                    </td>
+
+                </tr>
+
+            `;
+
+        });
+
+}
+
+
+/* =====================================================
+                      ADD / EDIT
+===================================================== */
+
+function openModal(){
+
+    editIndex = -1;
+
+    document.getElementById("modalTitle")
+        .innerText =
+        "➕ Add Sale";
+
+
+    document.getElementById("saleDate")
+        .value = "";
+
+    document.getElementById("saleCompany")
+        .value = "";
+
+    document.getElementById("saleProduct")
+        .value = "";
+
+    document.getElementById("saleCategory")
+        .value = "";
+
+    document.getElementById("saleRegion")
+        .value = "";
+
+    document.getElementById("saleAmount")
+        .value = "";
+
+
+    document.getElementById("saleModal")
+        .classList.add("show");
+
+}
+
+
+function closeModal(){
+
+    document.getElementById("saleModal")
+        .classList.remove("show");
+
+}
+
+
+function saveSale(){
+
+    let sale = {
+
+        date:
+            document.getElementById("saleDate")
+            .value,
+
+        company:
+            document.getElementById("saleCompany")
+            .value.trim(),
+
+        product:
+            document.getElementById("saleProduct")
+            .value.trim(),
+
+        category:
+            document.getElementById("saleCategory")
+            .value.trim(),
+
+        region:
+            document.getElementById("saleRegion")
+            .value.trim(),
+
+        sales:
+            Number(
+                document.getElementById("saleAmount")
+                .value
+            )
+
+    };
+
+
+    if(
+        !sale.date ||
+        !sale.company ||
+        !sale.product ||
+        !sale.category ||
+        !sale.region ||
+        !sale.sales ||
+        sale.sales <= 0
+    ){
+
+        alert(
+            "Please fill all fields correctly."
+        );
+
+        return;
+
+    }
+
+
+    if(editIndex === -1){
+
+        salesData.push(sale);
+
+    }
+    else{
+
+        salesData[editIndex] = sale;
+
+    }
+
+
+    saveData();
+
+    closeModal();
+
+    resetFilters();
+
+}
+
+
+/* =====================================================
+                         EDIT
+===================================================== */
+
+function editSale(index){
+
+    editIndex = index;
+
+    let item =
+        salesData[index];
+
+
+    document.getElementById("modalTitle")
+        .innerText =
+        "✏️ Edit Sale";
+
+
+    document.getElementById("saleDate")
+        .value = item.date;
+
+    document.getElementById("saleCompany")
+        .value = item.company;
+
+    document.getElementById("saleProduct")
+        .value = item.product;
+
+    document.getElementById("saleCategory")
+        .value = item.category;
+
+    document.getElementById("saleRegion")
+        .value = item.region;
+
+    document.getElementById("saleAmount")
+        .value = item.sales;
+
+
+    document.getElementById("saleModal")
+        .classList.add("show");
+
+}
+
+
+/* =====================================================
+                         DELETE
+===================================================== */
+
+function deleteSale(index){
+
+    let item =
+        salesData[index];
+
+
+    if(!confirm(
+        `Delete ${item.product} sale of ${money(item.sales)}?`
+    )){
+        return;
+    }
+
+
+    salesData.splice(index,1);
+
+    saveData();
+
+    resetFilters();
+
+}
+
+
+function deleteAll(){
+
+    if(!salesData.length){
+
+        alert(
+            "No sales data available."
+        );
+
+        return;
+
+    }
+
+
+    if(!confirm(
+        "Delete all sales records?"
+    )){
+        return;
+    }
+
+
+    salesData = [];
+
+    saveData();
+
+    resetFilters();
+
+}
+
+
+/* =====================================================
+                       PREDICTION
+===================================================== */
+
+function runPrediction(){
+
+    let data =
+        filteredData.length
+        ? filteredData
+        : salesData;
+
+
+    if(!data.length){
+
+        alert(
+            "Add sales data first."
+        );
+
+        return;
+
+    }
+
+
+    let value =
+        forecast(data);
+
+
+    document.getElementById("forecast")
+        .innerText =
+        money(value);
+
+    document.getElementById("bigForecast")
+        .innerText =
+        money(value);
+
+
+    alert(
+        "Next Month Forecast: " +
+        money(value)
+    );
+
+}
+
+
+/* =====================================================
+                       CSV IMPORT
+===================================================== */
+
+document
+.getElementById("csvInput")
+.addEventListener(
+    "change",
+    function(){
+
+        let file =
+            this.files[0];
+
+        if(!file){
+            return;
+        }
+
+
+        let reader =
+            new FileReader();
+
+
+        reader.onload =
+        function(e){
+
+            let text =
+                e.target.result
+                .replace(/^\uFEFF/,"")
+                .trim();
+
+
+            if(!text){
+
+                alert(
+                    "CSV file is empty."
+                );
+
+                return;
+
+            }
+
+
+            let rows =
+                text.split(/\r?\n/);
+
+
+            if(rows.length < 2){
+
+                alert(
+                    "CSV must contain header and data."
+                );
+
+                return;
+
+            }
+
+
+            let headers =
+                rows[0]
+                .split(",")
+                .map(
+                    x =>
+                        x.trim()
+                        .toLowerCase()
+                );
+
+
+            let dateI =
+                headers.indexOf("date");
+
+            let companyI =
+                headers.indexOf("company");
+
+            let productI =
+                headers.indexOf("product");
+
+            let categoryI =
+                headers.indexOf("category");
+
+            let regionI =
+                headers.indexOf("region");
+
+            let salesI =
+                headers.indexOf("sales");
+
+
+            if(
+                dateI < 0 ||
+                companyI < 0 ||
+                productI < 0 ||
+                categoryI < 0 ||
+                regionI < 0 ||
+                salesI < 0
+            ){
+
+                alert(
+                    "CSV columns must be: Date,Company,Product,Category,Region,Sales"
+                );
+
+                return;
+
+            }
+
+
+            let imported = [];
+
+
+            for(
+                let i = 1;
+                i < rows.length;
+                i++
+            ){
+
+                if(!rows[i].trim()){
+                    continue;
+                }
+
+
+                let c =
+                    rows[i].split(",");
+
+
+                let amount =
+                    Number(
+                        (c[salesI] || "")
+                        .replace(/₹|,/g,"")
+                        .trim()
+                    );
+
+
+                if(
+                    c[dateI] &&
+                    c[companyI] &&
+                    c[productI] &&
+                    c[categoryI] &&
+                    c[regionI] &&
+                    !isNaN(amount)
+                ){
+
+                    imported.push({
+
+                        date:
+                            c[dateI].trim(),
+
+                        company:
+                            c[companyI].trim(),
+
+                        product:
+                            c[productI].trim(),
+
+                        category:
+                            c[categoryI].trim(),
+
+                        region:
+                            c[regionI].trim(),
+
+                        sales:
+                            amount
+
+                    });
+
+                }
+
+            }
+
+
+            if(!imported.length){
+
+                alert(
+                    "No valid records found."
+                );
+
+                return;
+
+            }
+
+
+            salesData =
+                salesData.concat(imported);
+
+
+            saveData();
+
+            resetFilters();
+
+
+            alert(
+                imported.length +
+                " records imported successfully!"
+            );
+
+
+            document.getElementById("csvInput")
+                .value = "";
+
+        };
+
+
+        reader.readAsText(file);
+
+    }
+);
+
+
+/* =====================================================
+                       CSV EXPORT
+===================================================== */
+
+function csvEscape(value){
+
+    return `"${String(value)
+        .replace(/"/g,'""')}"`;
+
+}
+
+
+function exportCSV(){
+
+    if(!salesData.length){
+
+        alert(
+            "No data available."
+        );
+
+        return;
+
+    }
+
+
+    let csv =
+        "Date,Company,Product,Category,Region,Sales\n";
+
+
+    salesData.forEach(item => {
+
+        csv +=
+            [
+                item.date,
+                item.company,
+                item.product,
+                item.category,
+                item.region,
+                item.sales
+            ]
+            .map(csvEscape)
+            .join(",") +
+            "\n";
+
+    });
+
+
+    let blob =
+        new Blob(
+            [csv],
+            {type:"text/csv"}
+        );
+
+
+    let url =
+        URL.createObjectURL(blob);
+
+
+    let a =
+        document.createElement("a");
+
+    a.href = url;
+
+    a.download =
+        "sales-prediction-data.csv";
+
+    document.body.appendChild(a);
+
+    a.click();
+
+    a.remove();
+
+    URL.revokeObjectURL(url);
+
+}
+
+
+/* =====================================================
+                       DARK MODE
+===================================================== */
+
+function toggleDark(){
+
+    let on =
+        document.getElementById(
+            "darkToggle"
+        ).checked;
+
+
+    document.body.classList.toggle(
+        "dark-mode",
+        on
+    );
+
+
+    localStorage.setItem(
+        "salesAIDark",
+        on ? "on" : "off"
+    );
+
+}
+
+
+function loadDark(){
+
+    let on =
+        localStorage.getItem(
+            "salesAIDark"
+        ) === "on";
+
+
+    document.body.classList.toggle(
+        "dark-mode",
+        on
+    );
+
+
+    document.getElementById(
+        "darkToggle"
+    ).checked = on;
+
+}
+
+
+/* =====================================================
+                     LOCAL AUTH
+===================================================== */
+
+function getUsers(){
+
+    try{
+
+        return JSON.parse(
+            localStorage.getItem(
+                "salesAIUsers"
+            ) || "[]"
+        );
+
+    }
+    catch(error){
+
+        return [];
+
+    }
+
+}
+
+
+function saveUsers(users){
+
+    localStorage.setItem(
+        "salesAIUsers",
+        JSON.stringify(users)
+    );
+
+}
+
+
+/* =====================================================
+                       AUTH TABS
+===================================================== */
+
+function showAuth(type){
+
+    let signin =
+        type === "signin";
+
+
+    document.getElementById(
+        "signinForm"
+    )
+    .classList.toggle(
+        "active",
+        signin
+    );
+
+
+    document.getElementById(
+        "signupForm"
+    )
+    .classList.toggle(
+        "active",
+        !signin
+    );
+
+
+    document.getElementById(
+        "signInTab"
+    )
+    .classList.toggle(
+        "active",
+        signin
+    );
+
+
+    document.getElementById(
+        "signUpTab"
+    )
+    .classList.toggle(
+        "active",
+        !signin
+    );
+
+}
+
+
+/* =====================================================
+                       SIGN UP
+===================================================== */
+
+function signUp(e){
+
+    e.preventDefault();
+
+
+    let name =
+        document.getElementById(
+            "signupName"
+        ).value.trim();
+
+
+    let email =
+        document.getElementById(
+            "signupEmail"
+        ).value.trim()
+        .toLowerCase();
+
+
+    let password =
+        document.getElementById(
+            "signupPassword"
+        ).value;
+
+
+    let confirmPassword =
+        document.getElementById(
+            "signupConfirm"
+        ).value;
+
+
+    let message =
+        document.getElementById(
+            "signupMessage"
+        );
+
+
+    message.innerText = "";
+
+
+    if(name.length < 2){
+
+        message.style.color =
+            "#dc2626";
+
+        message.innerText =
+            "Please enter a valid name.";
+
+        return;
+
+    }
+
+
+    if(password.length < 6){
+
+        message.style.color =
+            "#dc2626";
+
+        message.innerText =
+            "Password must contain at least 6 characters.";
+
+        return;
+
+    }
+
+
+    if(password !== confirmPassword){
+
+        message.style.color =
+            "#dc2626";
+
+        message.innerText =
+            "Passwords do not match.";
+
+        return;
+
+    }
+
+
+    let users =
+        getUsers();
+
+
+    if(
+        users.some(
+            u => u.email === email
+        )
+    ){
+
+        message.style.color =
+            "#dc2626";
+
+        message.innerText =
+            "Account already exists. Please Sign In.";
+
+        return;
+
+    }
+
+
+    users.push({
+
+        name:name,
+        email:email,
+        password:password
+
+    });
+
+
+    saveUsers(users);
+
+
+    message.style.color =
+        "#16a34a";
+
+    message.innerText =
+        "Account created successfully!";
+
+
+    document.getElementById(
+        "signupForm"
+    ).reset();
+
+
+    setTimeout(() => {
+
+        showAuth("signin");
+
+        document.getElementById(
+            "loginEmail"
+        ).value = email;
+
+        document.getElementById(
+            "loginPassword"
+        ).focus();
+
+    },700);
+
+}
+
+
+/* =====================================================
+                       SIGN IN
+===================================================== */
+
+function signIn(e){
+
+    e.preventDefault();
+
+
+    let email =
+        document.getElementById(
+            "loginEmail"
+        ).value.trim()
+        .toLowerCase();
+
+
+    let password =
+        document.getElementById(
+            "loginPassword"
+        ).value;
+
+
+    let message =
+        document.getElementById(
+            "loginMessage"
+        );
+
+
+    message.innerText = "";
+
+
+    let users =
+        getUsers();
+
+
+    let user =
+        users.find(
+            u =>
+                u.email === email &&
+                u.password === password
+        );
+
+
+    if(!user){
+
+        message.style.color =
+            "#dc2626";
+
+        message.innerText =
+            "Invalid email or password.";
+
+        return;
+
+    }
+
+
+    localStorage.setItem(
+        "salesAILoggedUser",
+        JSON.stringify({
+
+            name:user.name,
+            email:user.email
+
+        })
+    );
+
+
+    openDashboard(user);
+
+}
+
+
+/* =====================================================
+                    OPEN DASHBOARD
+===================================================== */
+
+function openDashboard(user){
+
+    document.getElementById(
+        "authScreen"
+    )
+    .classList.add("hidden");
+
+
+    document.getElementById(
+        "userBadge"
+    )
+    .innerText =
+        "👤 " + user.name;
+
+
+    updateDashboard(
+        salesData
+    );
+
+}
+
+
+/* =====================================================
+                         LOGOUT
+===================================================== */
+
+function logout(){
+
+    localStorage.removeItem(
+        "salesAILoggedUser"
+    );
+
+
+    document.getElementById(
+        "authScreen"
+    )
+    .classList.remove("hidden");
+
+
+    document.getElementById(
+        "loginPassword"
+    ).value = "";
+
+
+    document.getElementById(
+        "loginMessage"
+    ).innerText = "";
+
+
+    showAuth("signin");
+
+}
+
+
+/* =====================================================
+                      CHECK LOGIN
+===================================================== */
+
+function checkLogin(){
+
+    let saved =
+        localStorage.getItem(
+            "salesAILoggedUser"
+        );
+
+
+    if(!saved){
+
+        document.getElementById(
+            "authScreen"
+        )
+        .classList.remove("hidden");
+
+        return;
+
+    }
+
+
+    try{
+
+        let user =
+            JSON.parse(saved);
+
+        if(
+            !user ||
+            !user.name ||
+            !user.email
+        ){
+            throw new Error(
+                "Invalid saved user"
+            );
+        }
+
+
+        openDashboard(user);
+
+    }
+    catch(error){
+
+        localStorage.removeItem(
+            "salesAILoggedUser"
+        );
+
+        document.getElementById(
+            "authScreen"
+        )
+        .classList.remove("hidden");
+
+    }
+
+}
+
+
+/* =====================================================
+                     MODAL OUTSIDE CLICK
+===================================================== */
+
+document
+.getElementById("saleModal")
+.addEventListener(
+    "click",
+    function(e){
+
+        if(e.target === this){
+            closeModal();
+        }
+
+    }
+);
+
+
+/* =====================================================
+                       INITIALIZE
+===================================================== */
+
+loadDark();
+
+loadFilters();
+
+resetFilters();
+
+checkLogin();
+
+</script>
+
+<!-- Code injected by live-server -->
+<script>
+	// <![CDATA[  <-- For SVG support
+	if ('WebSocket' in window) {
+		(function () {
+			function refreshCSS() {
+				var sheets = [].slice.call(document.getElementsByTagName("link"));
+				var head = document.getElementsByTagName("head")[0];
+				for (var i = 0; i < sheets.length; ++i) {
+					var elem = sheets[i];
+					var parent = elem.parentElement || head;
+					parent.removeChild(elem);
+					var rel = elem.rel;
+					if (elem.href && typeof rel != "string" || rel.length == 0 || rel.toLowerCase() == "stylesheet") {
+						var url = elem.href.replace(/(&|\?)_cacheOverride=\d+/, '');
+						elem.href = url + (url.indexOf('?') >= 0 ? '&' : '?') + '_cacheOverride=' + (new Date().valueOf());
+					}
+					parent.appendChild(elem);
+				}
+			}
+			var protocol = window.location.protocol === 'http:' ? 'ws://' : 'wss://';
+			var address = protocol + window.location.host + window.location.pathname + '/ws';
+			var socket = new WebSocket(address);
+			socket.onmessage = function (msg) {
+				if (msg.data == 'reload') window.location.reload();
+				else if (msg.data == 'refreshcss') refreshCSS();
+			};
+			if (sessionStorage && !sessionStorage.getItem('IsThisFirstTime_Log_From_LiveServer')) {
+				console.log('Live reload enabled.');
+				sessionStorage.setItem('IsThisFirstTime_Log_From_LiveServer', true);
+			}
+		})();
+	}
+	else {
+		console.error('Upgrade your browser. This Browser is NOT supported WebSocket for Live-Reloading.');
+	}
+	// ]]>
+</script>
+
+</body></html>
